@@ -201,7 +201,7 @@ service gateway {
       returns (stream gateway_resp_v1);
   rpc routing(gateway_routing_req_v1) returns (stream gateway_resp_v1);
   rpc stream_poc(stream gateway_poc_req_v1) returns (stream gateway_resp_v1);
-  rpc stream_config_update(gateway_config_update_req_v1)
+  rpc config_update(gateway_config_update_req_v1)
       returns (stream gateway_resp_v1);
 
   rpc is_active_sc(gateway_sc_is_active_req_v1) returns (gateway_resp_v1);
@@ -217,6 +217,6 @@ service gateway {
       returns (gateway_resp_v1);
   rpc region_params(gateway_poc_region_params_req_v1) returns (gateway_resp_v1);
 
-  rpc config_update(gateway_config_req_v1) returns (gateway_resp_v1);
+  rpc config(gateway_config_req_v1) returns (gateway_resp_v1);
   rpc validators(gateway_validators_req_v1) returns (gateway_resp_v1);
 }
