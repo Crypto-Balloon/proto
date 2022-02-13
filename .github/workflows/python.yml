@@ -1,0 +1,34 @@
+on:
+  push:
+    branches: [ master ]
+    tags: ['v*']
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Install protoc
+        env:
+          PROTOC_VERSION: "3.19.4"
+          PROTOC_ZIP: "protoc-3.19.4-linux-x86_64.zip"
+        run: wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP && sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc && sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*' && sudo chmod a+x /usr/local/bin/protoc && rm -f $PROTOC_ZIP
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Build python module
+        run: mkdir generated && protoc -I src --python_betterproto_out=generated/ src/*.proto src/service/*.proto
+      # Appears related to https://github.com/danielgtaylor/python-betterproto/issues/238 but we need the latest beta of
+      # betterproto to build src/service/*.proto
+      - name: Trim python module
+        run: sed -i '/from . import /d' generated/helium/__init__.py
+      - name: Python artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: helium_proto
+          path: generated/helium
